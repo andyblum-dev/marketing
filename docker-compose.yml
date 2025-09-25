@@ -1,0 +1,30 @@
+services:
+  activemq:
+    restart: always
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+        PUBLIC_IP: ${PUBLIC_IP}
+        ARTEMIS_USER: ${ARTEMIS_USER}
+        ARTEMIS_PASSWORD: ${ARTEMIS_PASSWORD}
+    container_name: activemq-artemis-queue
+    environment:
+      PUBLIC_IP: ${PUBLIC_IP}
+      ARTEMIS_USER: ${ARTEMIS_USER}
+      ARTEMIS_PASSWORD: ${ARTEMIS_PASSWORD}
+      EXTRA_ARGS: "--http-host 0.0.0.0 --no-amqp-acceptor --no-hornetq-acceptor --no-mqtt-acceptor --no-web"
+    ports:
+      - "61616:61616" # Expose ActiveMQ port to the public
+      - "61613:61613" # STOMP port
+    networks:
+      - artemis-network
+    healthcheck:
+      test: ["CMD-SHELL", "netstat -an | grep 61616 | grep LISTEN"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+networks:
+  artemis-network:
+    driver: bridge

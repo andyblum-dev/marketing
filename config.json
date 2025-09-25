@@ -1,0 +1,92 @@
+{
+  "job_search": {
+  "sites": ["indeed"],
+    "search_terms": [
+      "ETL developer remote",
+      "ETL engineer remote", 
+      "data pipeline engineer remote",
+      "data integration engineer remote",
+      "remote ETL developer",
+      "remote data engineer ETL"
+    ],
+    "locations": [
+      "Remote",
+      "United States"
+    ],
+  "results_wanted": 10,
+    "hours_old": 48,
+    "country_indeed": "USA",
+    "job_types": ["fulltime", "contract"],
+    "experience_levels": ["entry_level", "mid_level", "senior_level"]
+  },
+  
+  "cron_schedule": {
+    "enabled": false,
+    "schedule": "0 */6 * * *",
+    "description": "Run every 6 hours"
+  },
+  
+  "product_info": {
+    "name": "ETL Solution Platform",
+    "description": "Advanced ETL/Data Pipeline automation and optimization platform",
+    "target_market": "Companies seeking ETL developers (indicating ETL pain points)",
+    "value_proposition": "Streamline your data integration and reduce ETL development costs"
+  },
+  
+  "data_collection_focus": {
+    "primary_targets": [
+      "job_poster_information",
+      "company_hiring_patterns", 
+      "etl_technology_stack_requirements",
+      "salary_ranges_by_location",
+      "hiring_urgency_indicators"
+    ],
+    "poster_info_fields": [
+      "recruiter_name",
+      "recruiter_email", 
+      "recruiter_linkedin",
+      "company_name",
+      "company_size",
+      "company_industry",
+      "hiring_manager_info",
+      "job_posting_date",
+      "application_deadline",
+      "contact_information"
+    ]
+  },
+  
+  "filters": {
+    "salary_min": 70000,
+    "salary_max": 200000,
+    "exclude_companies": [],
+    "required_keywords": ["ETL", "data pipeline", "data warehouse", "extract", "transform", "load"],
+    "exclude_keywords": ["intern", "internship", "on-site", "onsite", "in-office"],
+    "remote_only": true,
+    "target_company_sizes": ["medium", "large", "enterprise"],
+    "focus_industries": ["technology", "finance", "healthcare", "retail", "manufacturing"]
+  },
+  
+  "output": {
+    "file_path": "./job_results"
+  },
+  
+  "messaging": {
+    "activemq": {
+      "enabled": true,
+      "host": "localhost",
+      "port": 61616,
+      "queue_name": "etl_job_leads"
+    },
+    "data_only": true,
+    "no_interactions": true,
+    "pure_collection": true
+  },
+  
+  "logging": {
+    "level": "INFO",
+    "file_path": "./logs/jobspy.log",
+    "console_output": true,
+    "max_file_size": "10MB",
+    "backup_count": 5
+  }
+}

@@ -11,8 +11,9 @@
       "Remote",
       "United States"
     ],
-  "results_wanted": 50,
-    "hours_old": 24,
+
+  "results_wanted": 15,
+    "hours_old": 48,
     "country_indeed": "USA",
     "job_types": ["fulltime", "contract"],
     "experience_levels": ["entry_level", "mid_level", "senior_level"]

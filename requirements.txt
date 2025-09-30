@@ -5,14 +5,17 @@ certifi==2025.8.3
 charset-normalizer==3.4.3
 docopt==0.6.2
 et_xmlfile @ file:///croot/et_xmlfile_1756462486635/work
+greenlet==3.2.4
 idna==3.10
 markdownify==0.13.1
 numpy==1.26.3
 openpyxl @ file:///croot/openpyxl_1736366913861/work
 pandas==2.3.2
+playwright==1.55.0
 plyer==2.1.0
 pydantic==2.11.9
 pydantic_core==2.33.2
+pyee==13.0.0
 python-dateutil==2.9.0.post0
 python-jobspy==1.1.82
 pytz==2025.2

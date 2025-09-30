@@ -1,23 +1,46 @@
 {
   "job_search": {
-  "sites": ["indeed"],
+  "sites": ["indeed", "linkedin", "glassdoor"],
     "search_terms": [
-      "ETL developer remote",
-      "ETL engineer remote", 
-      "data pipeline engineer remote",
-      "data integration engineer remote",
-      "remote ETL developer",
-      "remote data engineer ETL"
+      "ETL remote",
+      "Data Architect remote", 
+      "Data integration remote"
+      
     ],
     "locations": [
       "Remote",
       "United States"
     ],
+
   "results_wanted": 15,
     "hours_old": 48,
     "country_indeed": "USA",
     "job_types": ["fulltime", "contract"],
     "experience_levels": ["entry_level", "mid_level", "senior_level"]
+  },
+
+  "hnhiring": {
+    "enabled": true,
+    "categories": ["/locations/remote", "/technologies/data", "/technologies/kafka"],
+    "days": 2,
+    "min_salary": null,
+    "max_salary": null
+  },
+
+  "builtin": {
+    "enabled": true,
+    "keywords": [],
+    "max_age_hours": 48,
+    "max_pages": 20,
+    "start_page": 1,
+    "per_keyword_limit": 25,
+    "total_limit": 100,
+    "remote": true,
+    "all_locations": true,
+    "headless": true,
+    "slow_mo_ms": 0,
+    "page_wait_ms": 500,
+    "detail_wait_ms": 1500
   },
   
   "cron_schedule": {

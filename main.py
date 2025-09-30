@@ -4,6 +4,7 @@ JobSpy Data Collector (CSV-first)
 Fetch the requested job listings, write them to CSV, and notify ActiveMQ when the file is ready.
 """
 
+import hashlib
 import json
 import logging
 import os
@@ -17,6 +18,8 @@ import pandas as pd
 import schedule
 import stomp
 from jobspy import scrape_jobs
+from hnhiring_scraper import HNHiringCollector
+from builtin import BuiltinJobsCollector
 
 # Load environment variables at startup
 def load_env_vars():
@@ -63,7 +66,7 @@ class ConfigManager:
         log_file = log_config.get("file_path", "./logs/jobspy.log")
         os.makedirs(Path(log_file).parent, exist_ok=True)
 
-        handlers = [logging.FileHandler(log_file)]
+        handlers: list[logging.Handler] = [logging.FileHandler(log_file)]
         if log_config.get("console_output", True):
             handlers.append(logging.StreamHandler())
 
@@ -146,6 +149,22 @@ class JobSpyScraper:
         self.config = config_manager.config
         self.mq_handler = ActiveMQHandler(self.config)
         self.output_dir = self._prepare_output_directory()
+        self.hn_collector = HNHiringCollector(self.config)
+        self.builtin_collector = BuiltinJobsCollector(self.config)
+
+        hn_columns = getattr(self.hn_collector.transformer, "columns", [])
+        builtin_columns = getattr(self.builtin_collector.transformer, "columns", [])
+        self.default_columns = hn_columns or builtin_columns or []
+
+    @staticmethod
+    def _compute_title_hash(title) -> str | None:
+        if not isinstance(title, str):
+            return None
+        snippet = title.strip()[:100]
+        if not snippet:
+            return None
+        digest = hashlib.sha256(snippet.encode("utf-8")).hexdigest()
+        return digest
 
     def _prepare_output_directory(self) -> Path:
         output_config = self.config.get('output', {})
@@ -227,12 +246,32 @@ class JobSpyScraper:
         cycle_started = datetime.utcnow()
 
         try:
-            jobs_df = self.scrape_jobs()
-            csv_path = self.save_to_csv(jobs_df)
-            self.notify_csv_ready(csv_path, len(jobs_df))
+            jobspy_df = self.scrape_jobs()
+            search_terms = self.config.get('job_search', {}).get('search_terms', [])
+            hn_df = self.hn_collector.scrape(search_terms)
+            builtin_df = self.builtin_collector.scrape(search_terms)
+
+            logging.info("JobSpy source produced %d rows", len(jobspy_df) if jobspy_df is not None else 0)
+            logging.info("HN Hiring source produced %d rows", len(hn_df) if hn_df is not None else 0)
+            logging.info("BuiltIn source produced %d rows", len(builtin_df) if builtin_df is not None else 0)
+
+            dataframes = [df for df in (jobspy_df, hn_df, builtin_df) if not df.empty]
+            if dataframes:
+                combined_df = pd.concat(dataframes, ignore_index=True, sort=False)
+            else:
+                combined_df = pd.DataFrame(columns=self.default_columns)
+
+            if "title_hash" not in combined_df.columns:
+                combined_df["title_hash"] = None
+
+            if not combined_df.empty and "title" in combined_df.columns:
+                combined_df["title_hash"] = combined_df["title"].apply(self._compute_title_hash)
+
+            csv_path = self.save_to_csv(combined_df)
+            self.notify_csv_ready(csv_path, len(combined_df))
             logging.info(
                 "Cycle finished successfully with %d rows in %s",
-                len(jobs_df),
+                len(combined_df),
                 datetime.utcnow() - cycle_started,
             )
 

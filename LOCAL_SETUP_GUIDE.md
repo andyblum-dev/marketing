@@ -89,6 +89,9 @@ pip install -r requirements.txt
 
 # Verify installation
 python -c "import jobspy, stomp, pandas, schedule; print('All packages installed successfully')"
+
+# Install Playwright browsers (BuiltIn integration)
+playwright install firefox
 ```
 
 ## Step 4: Docker Configuration
@@ -161,3 +164,54 @@ Connected to ActiveMQ at localhost:61616
 Scheduled to run every 6 hours
 JobSpy Data Collector is running. Press Ctrl+C to stop.
 ```
+
+### Hacker News Hiring (HN Hiring) Source
+
+The collector now also pulls matching roles from hnhiring.com. Configuration lives in the new `hnhiring` block of `config.json`:
+
+```
+"hnhiring": {
+  "enabled": true,
+  "categories": ["/locations/remote"],
+  "days": 14,
+  "min_salary": null,
+  "max_salary": null
+}
+```
+
+- Set `enabled` to `false` to disable this source.
+- Adjust `categories` to target different HN collections (for example `/technologies/python`).
+- Use `days`, `min_salary`, and `max_salary` to narrow the feed.
+
+### BuiltIn.com Source
+
+The scraper now collects additional roles directly from BuiltIn.com using Playwright-driven browsing. Configuration lives in the `builtin` block of `config.json`:
+
+```
+"builtin": {
+  "enabled": true,
+  "keywords": [],
+  "max_age_hours": 72,
+  "per_keyword_limit": 20,
+  "total_limit": 60,
+  "headless": true,
+  "page_wait_ms": 500,
+  "detail_wait_ms": 1500
+}
+```
+
+- Leave `keywords` empty to reuse the JobSpy search terms, or provide a custom list.
+- `per_keyword_limit` caps detailed scrapes per query; `total_limit` caps the entire BuiltIn run.
+- `headless`, `page_wait_ms`, and `detail_wait_ms` control Playwright behaviour (tweak if pages load slowly).
+- Run `playwright install firefox` once per machine so the collector has a browser available.
+
+## Step 6: Verify Everything Works
+
+After setup, ensure all components communicate and function as expected:
+
+1. **Listener**: Check Terminal 1 for any error messages. It should be listening without interruptions.
+2. **Scraper**: In Terminal 2, ensure the scraper runs without issues and connects to ActiveMQ.
+3. **Docker**: Use `sudo docker ps` to confirm all necessary containers are active.
+4. **Logs**: Monitor logs in both terminals. No critical errors should appear.
+
+Once verified, the system is ready for use. The JobSpy ETL Data Collector will scrape, process, and store job listings as configured.

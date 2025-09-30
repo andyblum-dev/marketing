@@ -5,3 +5,5 @@ etl_leads_analysis.json
 __pycache__/
 README.md
 analyze_leads.py
+samples/
+tools/

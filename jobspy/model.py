@@ -293,6 +293,8 @@ class Site(Enum):
     BAYT = "bayt"
     NAUKRI = "naukri"
     BDJOBS = "bdjobs"  # Add this line
+    BUILTIN = "builtin"
+    HNHIRING = "hnhiring"
 
 
 class SalarySource(Enum):

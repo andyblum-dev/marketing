@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Tuple
+from typing import Dict, List, Tuple
 
 import pandas as pd
 
@@ -24,6 +25,8 @@ from jobspy.util import (
     desired_order,
 )
 from jobspy.ziprecruiter import ZipRecruiter
+from jobspy.builtin import BuiltinJobsCollector
+from jobspy.hnhiring import HNHiringCollector
 
 
 # Update the SCRAPER_MAPPING dictionary in the scrape_jobs function
@@ -48,7 +51,8 @@ def scrape_jobs(
     hours_old: int = None,
     enforce_annual_salary: bool = False,
     verbose: int = 0,
-    user_agent: str = None,
+    user_agent: str | None = None,
+    config: Dict | None = None,
     **kwargs,
 ) -> pd.DataFrame:
     """
@@ -67,6 +71,7 @@ def scrape_jobs(
     }
     set_logger_level(verbose)
     job_type = get_enum_from_value(job_type) if job_type else None
+    config = config or kwargs.pop("config", None) or {}
 
     def get_site_type():
         site_types = list(Site)
@@ -101,15 +106,32 @@ def scrape_jobs(
         hours_old=hours_old,
     )
 
-    def scrape_site(site: Site) -> Tuple[str, JobResponse]:
-        scraper_class = SCRAPER_MAPPING[site]
-        scraper = scraper_class(proxies=proxies, ca_cert=ca_cert, user_agent=user_agent)
-        scraped_data: JobResponse = scraper.scrape(scraper_input)
-        cap_name = site.value.capitalize()
-        site_name = "ZipRecruiter" if cap_name == "Zip_recruiter" else cap_name
-        site_name = "LinkedIn" if cap_name == "Linkedin" else cap_name
-        create_logger(site_name).info(f"finished scraping")
-        return site.value, scraped_data
+    def scrape_site(site: Site) -> Tuple[str, JobResponse | pd.DataFrame]:
+        collector_config = config if isinstance(config, dict) else {}
+        if site in SCRAPER_MAPPING:
+            scraper_class = SCRAPER_MAPPING[site]
+            scraper = scraper_class(proxies=proxies, ca_cert=ca_cert, user_agent=user_agent)
+            scraped_data: JobResponse = scraper.scrape(scraper_input)
+            cap_name = site.value.capitalize()
+            site_name = "ZipRecruiter" if cap_name == "Zip_recruiter" else cap_name
+            site_name = "LinkedIn" if cap_name == "Linkedin" else cap_name
+            create_logger(site_name).info("finished scraping")
+            return site.value, scraped_data
+
+        if site == Site.BUILTIN:
+            collector = BuiltinJobsCollector(collector_config)
+            df = collector.scrape([kw for kw in [search_term] if kw])
+            df["site"] = site.value
+            return site.value, df
+
+        if site == Site.HNHIRING:
+            collector = HNHiringCollector(collector_config)
+            df = collector.scrape([kw for kw in [search_term] if kw])
+            if not df.empty:
+                df["site"] = site.value
+            return site.value, df
+
+        raise ValueError(f"Unsupported site: {site}")
 
     site_to_jobs_dict = {}
 
@@ -129,6 +151,9 @@ def scrape_jobs(
     jobs_dfs: list[pd.DataFrame] = []
 
     for site, job_response in site_to_jobs_dict.items():
+        if isinstance(job_response, pd.DataFrame):
+            jobs_dfs.append(job_response)
+            continue
         for job in job_response.jobs:
             job_data = job.dict()
             job_url = job_data["job_url"]
@@ -150,11 +175,10 @@ def scrape_jobs(
             # Handle compensation
             compensation_obj = job_data.get("compensation")
             if compensation_obj and isinstance(compensation_obj, dict):
-                job_data["interval"] = (
-                    compensation_obj.get("interval").value
-                    if compensation_obj.get("interval")
-                    else None
-                )
+                interval_value = compensation_obj.get("interval")
+                if interval_value is not None and hasattr(interval_value, "value"):
+                    interval_value = interval_value.value
+                job_data["interval"] = interval_value
                 job_data["min_amount"] = compensation_obj.get("min_amount")
                 job_data["max_amount"] = compensation_obj.get("max_amount")
                 job_data["currency"] = compensation_obj.get("currency", "USD")
@@ -223,5 +247,8 @@ def scrape_jobs(
 
 # Add BDJobs to __all__
 __all__ = [
+    "scrape_jobs",
     "BDJobs",
+    "BuiltinJobsCollector",
+    "HNHiringCollector",
 ]

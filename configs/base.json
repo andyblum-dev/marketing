@@ -1,0 +1,73 @@
+{
+  "job_search": {
+    "sites": [],
+    "search_terms": [],
+    "locations": [],
+    "results_wanted": 50,
+    "hours_old": 72,
+    "country_indeed": "USA",
+    "request_delay_seconds": 8,
+    "error_delay_seconds": 12,
+    "site_delay_seconds": 15,
+    "job_types": [],
+    "experience_levels": []
+  },
+  "cron_schedule": {
+    "enabled": false,
+    "schedule": "0 */6 * * *",
+    "description": "Run every 6 hours"
+  },
+  "filters": {
+    "salary_min": null,
+    "salary_max": null,
+    "exclude_companies": [],
+    "required_keywords": [],
+    "exclude_keywords": [],
+    "remote_only": true,
+    "target_company_sizes": [],
+    "focus_industries": []
+  },
+  "output": {
+    "file_path": "./job_results"
+  },
+  "messaging": {
+    "activemq": {
+      "enabled": true,
+      "host": "localhost",
+      "port": 61616,
+      "queue_name": "etl_job_leads"
+    }
+  },
+  "hnhiring": {
+    "enabled": false,
+    "categories": [],
+    "days": 2
+  },
+  "builtin": {
+    "enabled": false,
+    "keywords": [],
+    "max_age_hours": 48,
+    "max_pages": 10,
+    "per_keyword_limit": 20,
+    "total_limit": 100,
+    "remote": true,
+    "all_locations": true,
+    "headless": true,
+    "page_wait_ms": 500,
+    "detail_wait_ms": 1500
+  },
+  "logging": {
+    "level": "INFO",
+    "file_path": "./logs/jobspy.log",
+    "console_output": true,
+    "max_file_size": "10MB",
+    "backup_count": 5
+  },
+  "network": {
+    "vpn_rotation_script": "./scripts/reset_vpn.sh",
+    "rotate_before_request": true,
+    "rotate_after_failure": true,
+    "rotation_timeout_seconds": 75,
+    "cooldown_seconds": 5
+  }
+}

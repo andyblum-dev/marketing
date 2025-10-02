@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "JobSpy configuration",
+  "type": "object",
+  "properties": {
+    "inherits": {"type": "string"},
+    "job_search": {"type": "object"},
+    "filters": {"type": "object"},
+    "hnhiring": {"type": "object"},
+    "builtin": {"type": "object"},
+    "network": {"type": "object"},
+    "messaging": {"type": "object"},
+    "logging": {"type": "object"}
+  }
+}

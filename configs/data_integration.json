@@ -1,0 +1,69 @@
+{
+  "$schema": "./schema.json",
+  "inherits": "./base.json",
+  "job_search": {
+    "sites": ["indeed", "linkedin", "glassdoor"],
+    "search_terms": [
+      "data migration",
+      "data integration",
+      "ETL developer",
+      "data pipeline engineer",
+      "api integration"
+    ],
+    "locations": ["Remote", "United States"],
+    "results_wanted": 75,
+    "hours_old": 24,
+    "job_types": ["fulltime", "contract"],
+    "experience_levels": ["entry_level", "mid_level", "senior_level"]
+  },
+  "filters": {
+    "salary_min": 85000,
+    "salary_max": 220000,
+    "exclude_companies": [],
+    "required_keywords": [
+      "ETL",
+      "data pipeline",
+      "data warehouse",
+      "extract",
+      "transform",
+      "load"
+    ],
+    "exclude_keywords": [
+      "intern",
+      "internship",
+      "on-site",
+      "onsite",
+      "in-office"
+    ],
+    "remote_only": true,
+    "target_company_sizes": ["medium", "large", "enterprise"],
+    "focus_industries": ["technology", "finance", "healthcare", "retail", "manufacturing"]
+  },
+  "hnhiring": {
+    "enabled": true,
+    "categories": [
+      "/locations/remote",
+      "/technologies/data",
+      "/technologies/kafka"
+    ],
+    "days": 2
+  },
+  "builtin": {
+    "enabled": true,
+    "keywords": [
+      "data migration",
+      "data integration",
+      "etl",
+      "api integration"
+    ],
+    "max_age_hours": 48,
+    "max_pages": 20,
+    "per_keyword_limit": 25,
+    "total_limit": 120,
+    "remote": true,
+    "all_locations": true,
+    "headless": true,
+    "page_wait_ms": 600,
+    "detail_wait_ms": 1500
+  }
+}

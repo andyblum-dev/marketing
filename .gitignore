@@ -8,3 +8,7 @@
 *.pyc
 .env
 dist
+logs/
+job_results/
+examples/
+.github/

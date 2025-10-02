@@ -303,7 +303,7 @@ class LinkedIn(Scraper):
         :param metadata_card
         :return: location
         """
-        location = Location(country=Country.from_string(self.country))
+        location = Location(country=self._safe_country(self.country))
         if metadata_card is not None:
             location_tag = metadata_card.find(
                 "span", class_="job-search-card__location"
@@ -315,13 +315,23 @@ class LinkedIn(Scraper):
                 location = Location(
                     city=city,
                     state=state,
-                    country=Country.from_string(self.country),
+                    country=self._safe_country(self.country),
                 )
             elif len(parts) == 3:
                 city, state, country = parts
-                country = Country.from_string(country)
+                country = self._safe_country(country)
                 location = Location(city=city, state=state, country=country)
         return location
+
+    @staticmethod
+    def _safe_country(value: str | None) -> Country | str | None:
+        if value is None:
+            return None
+        try:
+            return Country.from_string(value)
+        except ValueError:
+            log.debug("LinkedIn: falling back to literal country '%s'", value)
+            return value
 
     def _parse_job_url_direct(self, soup: BeautifulSoup) -> str | None:
         """

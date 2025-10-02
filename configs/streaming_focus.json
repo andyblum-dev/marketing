@@ -1,0 +1,52 @@
+{
+  "$schema": "./schema.json",
+  "inherits": "./base.json",
+  "job_search": {
+    "sites": ["indeed", "linkedin"],
+    "search_terms": [
+      "data streaming engineer",
+      "kafka engineer",
+      "real-time data pipelines",
+      "change data capture"
+    ],
+    "locations": ["Remote", "United States"],
+    "results_wanted": 60,
+    "hours_old": 48,
+    "job_types": ["fulltime", "contract"],
+    "experience_levels": ["mid_level", "senior_level"]
+  },
+  "filters": {
+    "required_keywords": [
+      "kafka",
+      "streaming",
+      "cdc",
+      "real-time"
+    ],
+    "exclude_keywords": [
+      "intern",
+      "internship"
+    ],
+    "remote_only": true
+  },
+  "hnhiring": {
+    "enabled": true,
+    "categories": [
+      "/technologies/data",
+      "/technologies/kafka"
+    ],
+    "days": 3
+  },
+  "builtin": {
+    "enabled": true,
+    "keywords": [
+      "kafka",
+      "streaming",
+      "real-time data",
+      "data pipelines"
+    ],
+    "max_age_hours": 72,
+    "max_pages": 15,
+    "per_keyword_limit": 20,
+    "total_limit": 100
+  }
+}
